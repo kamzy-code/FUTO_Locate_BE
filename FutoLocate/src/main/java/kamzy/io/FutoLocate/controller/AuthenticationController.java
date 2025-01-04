@@ -28,9 +28,9 @@ public class AuthenticationController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login (@RequestParam String p0, @RequestParam String p1){
+    public ResponseEntity<String> login (@RequestParam String email, @RequestParam String password){
         json = new JSONObject();
-        String token = authservice.login(p0, p1);
+        String token = authservice.login(email, password);
         json.put("token", token);
         if (token.equals("Invalid credentials")){
             return ResponseEntity.status(401).body(json.toString());
