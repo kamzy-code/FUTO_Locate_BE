@@ -45,6 +45,8 @@ public class AuthenticationService {
             if (validate.isValidPassword(u.getPassword())){
                 u.setPassword(encrypt.hashPassword(u.getPassword()));
                 authRepo.save(u);
+            }else {
+                return "Weak Password";
             }
         }
         Users newUser = authRepo.ValidateUserDetails(u.getEmail(), u.getPassword());
