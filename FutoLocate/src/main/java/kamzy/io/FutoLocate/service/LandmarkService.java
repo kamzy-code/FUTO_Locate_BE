@@ -20,4 +20,8 @@ public class LandmarkService {
     public Optional<Landmarks> getLandmarkById (int landmark_id){
         return landmarkRepo.findById(landmark_id);
     }
+
+    public Optional<Landmarks> getLandmarkByName(String query) {
+        return landmarkRepo.findByName(query);
+    }
 }
