@@ -25,34 +25,34 @@ public class NavigationController {
     @Autowired
     NavigationLogService navLogServ;
 
-    @GetMapping("/routes")
-    public ResponseEntity<String> getRoutes (@RequestParam int start_landmark, @RequestParam int end_landmark){
-        List<Routes> r = routeServ.getAllRoutes(start_landmark, end_landmark);
-        if (r==null){
-            json.put("User", "No user found");
-            return new ResponseEntity<>(json.toString(), HttpStatus.NO_CONTENT);
-        }else {
-            json.put("User", r);
-            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
-        }
-    }
+//    @GetMapping("/routes")
+//    public ResponseEntity<String> getRoutes (@RequestParam int start_landmark, @RequestParam int end_landmark){
+//        List<Routes> r = routeServ.getAllRoutes(start_landmark, end_landmark);
+//        if (r==null){
+//            json.put("User", "No user found");
+//            return new ResponseEntity<>(json.toString(), HttpStatus.NO_CONTENT);
+//        }else {
+//            json.put("User", r);
+//            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+//        }
+//    }
 
-    @GetMapping("/routes/{route_id}")
-    public ResponseEntity<String> getRouteDetails (@RequestParam int route_id){
-        json = new JSONObject();
-        Routes r = routeServ.getRouteDetails(route_id);
-        if (r==null){
-            json.put("User", "No user found");
-            return new ResponseEntity<>(json.toString(), HttpStatus.NO_CONTENT);
-        }else {
-            json.put("User", r);
-            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
-        }
-    }
-    @PostMapping("/routes/create")
-    public ResponseEntity<Routes> createRoute (@RequestParam int startLandmarkId, @RequestParam int endLandmarkId, @RequestParam ModeOfTransport modeOfTransport){
+//    @GetMapping("/routes/{route_id}")
+//    public ResponseEntity<String> getRouteDetails (@RequestParam int route_id){
 //        json = new JSONObject();
-        Routes status = routeServ.CreateRoute(startLandmarkId, endLandmarkId, modeOfTransport);
+//        Routes r = routeServ.getRouteDetails(route_id);
+//        if (r==null){
+//            json.put("User", "No user found");
+//            return new ResponseEntity<>(json.toString(), HttpStatus.NO_CONTENT);
+//        }else {
+//            json.put("User", r);
+//            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+//        }
+//    }
+    @PostMapping("/routes/create")
+    public ResponseEntity<Routes> createRoute (@RequestParam double startLat, @RequestParam double startLong, @RequestParam double endLat, @RequestParam double endLong, @RequestParam ModeOfTransport modeOfTransport){
+//        json = new JSONObject();
+        Routes status = routeServ.CreateRoute(startLat, startLong, endLat, endLong, modeOfTransport);
 //        json.put("routes", status);
         return new ResponseEntity<>(status, HttpStatus.OK);
     }

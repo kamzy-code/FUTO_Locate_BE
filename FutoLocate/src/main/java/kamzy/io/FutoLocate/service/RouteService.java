@@ -16,7 +16,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RouteService {
@@ -33,51 +32,31 @@ public class RouteService {
     private static final double AVERAGE_BIKING_SPEED_KMH = 15.0; // Biking speed in km/h
     private static final double EARTH_RADIUS_KM = 6371.0; // Radius of Earth in kilometers
 
-    public List<Routes> getAllRoutes(int start_landmark_id, int end_landmark_id) {
-        validationHelper.validateLandmarkIds(start_landmark_id, end_landmark_id);
-        return routeRepo.getAllRoutesBetweenTwoLandmark(start_landmark_id, end_landmark_id);
-    }
+//    public List<Routes> getAllRoutes(int start_landmark_id, int end_landmark_id) {
+//        validationHelper.validateLandmarkIds(start_landmark_id, end_landmark_id);
+//        return routeRepo.getAllRoutesBetweenTwoLandmark(start_landmark_id, end_landmark_id);
+//    }
+//
+//    public Routes getRouteDetails(int route_id) {
+//        return routeRepo.getRouteById(route_id);
+//    }
 
-    public Routes getRouteDetails(int route_id) {
-        return routeRepo.getRouteById(route_id);
-    }
-
-    public Routes CreateRoute (int startLandmarkId, int endLandmarkId, ModeOfTransport transport){
-        validationHelper.validateLandmarkIds(startLandmarkId, endLandmarkId);
-        Landmarks startLandmark = landmarkRepo.getLandmarkById(startLandmarkId);
-        Landmarks endLandmark = landmarkRepo.getLandmarkById(endLandmarkId);
+    public Routes CreateRoute (double startLat, double startLong, double endLat, double endLong, ModeOfTransport transport){
 
         Routes route = new Routes();
-        route.setStart_landmark_id(startLandmark.getLandmark_id());
-        route.setEnd_landmark_id(endLandmark.getLandmark_id());
-        route.setDistance(calculateDistance(startLandmark.getLandmark_id(), endLandmark.getLandmark_id()));
+        route.setDistance(calculateDistance(startLat, startLong, endLat, endLong));
         try {
-            route.setPath_coordinates(fetchRoutePath(startLandmark.getLatitude(), startLandmark.getLongitude(), endLandmark.getLatitude(), endLandmark.getLongitude()));
+            route.setPath_coordinates(fetchRoutePathviaOSM(startLat, startLong, endLat, endLong));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        route.setEstimated_time(getEstimatedTime(startLandmarkId, endLandmarkId, transport));
+        route.setEstimated_time(getEstimatedTime(startLat, startLong, endLat, endLong, transport));
         route.setModeOfTransport(transport);
 //        routeRepo.save(route);
         return route;
     }
 
-    public double calculateDistance(int startLandmarkId, int endLandmarkId) {
-        validationHelper.validateLandmarkIds(startLandmarkId, endLandmarkId);
-        // Retrieve start and end landmark data
-        Landmarks startLandmark = landmarkRepo.getLandmarkById(startLandmarkId);
-        Landmarks endLandmark = landmarkRepo.getLandmarkById(endLandmarkId);
-
-        if (startLandmark == null || endLandmark == null) {
-            throw new IllegalArgumentException("Invalid landmark ID(s).");
-        }
-
-        // Extract coordinates
-        double startLat = startLandmark.getLatitude();
-        double startLong = startLandmark.getLongitude();
-        double endLat = endLandmark.getLatitude();
-        double endLong = endLandmark.getLongitude();
-
+    public double calculateDistance(double startLat, double startLong, double endLat, double endLong) {
         // Convert degrees to radians
         double latDistance = Math.toRadians(endLat - startLat);
         double longDistance = Math.toRadians(endLong - startLong);
@@ -93,7 +72,7 @@ public class RouteService {
         return EARTH_RADIUS_KM * c;
     }
 
-    public String fetchRoutePath(double startLat, double startLng, double endLat, double endLng) throws Exception {
+    public String fetchRoutePathviaOSM(double startLat, double startLng, double endLat, double endLng) throws Exception {
         String urlStr2 = String.format("http://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson\n",
                 startLng, startLat, endLng, endLat
         );
@@ -124,19 +103,19 @@ public class RouteService {
         if (!routes.isEmpty()) {
 //            JSONObject overviewPolyline = routes.getJSONObject(0).getJSONObject("overview_polyline");
             JSONObject geometry = routes.getJSONObject(0).getJSONObject("geometry");
+            JSONArray coordinates = geometry.getJSONArray("coordinates");
             System.out.println("Step 4");
 //            JSONArray coordinates = geometry.getJSONArray("coordinates");
 //            return overviewPolyline.getString("points"); // Encoded polyline
-            return geometry.toString();
+            return coordinates.toString();
         }
 
         throw new Exception("No route found.");
     }
 
-    public int getEstimatedTime(int startLandmarkId, int endLandmarkId, ModeOfTransport modeOfTransport) {
-        validationHelper.validateLandmarkIds(startLandmarkId, endLandmarkId);
+    public int getEstimatedTime(double startLat, double startLong, double endLat, double endLong, ModeOfTransport modeOfTransport) {
         // Calculate distance between landmarks
-        double distance = calculateDistance(startLandmarkId, endLandmarkId);
+        double distance = calculateDistance(startLat, startLong, endLat, endLong);
 
         // Determine average speed based on mode of transport
         double averageSpeed;

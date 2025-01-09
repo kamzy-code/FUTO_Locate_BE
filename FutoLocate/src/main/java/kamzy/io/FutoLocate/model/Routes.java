@@ -20,8 +20,6 @@ public class Routes {
 
     @Id
     private int route_id;
-    private int start_landmark_id;
-    private int end_landmark_id;
     private double distance;
     private String path_coordinates;
     private int estimated_time;
