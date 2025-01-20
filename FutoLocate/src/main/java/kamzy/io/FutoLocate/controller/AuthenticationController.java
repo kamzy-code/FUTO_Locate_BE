@@ -55,7 +55,7 @@ public class AuthenticationController {
         return new ResponseEntity<>(json.toString(), HttpStatus.OK);
     }
 
-    @GetMapping("/profile")
+    @PostMapping("/profile")
     public ResponseEntity<Users> getProfile (@RequestParam String email){
         Users u = authservice.getProfileByEmail(email);
         return new ResponseEntity<>(u, HttpStatus.OK);
