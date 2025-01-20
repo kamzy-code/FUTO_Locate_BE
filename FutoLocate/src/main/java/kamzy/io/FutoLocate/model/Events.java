@@ -20,6 +20,5 @@ public class Events {
     private double latitude;
     private double longitude;
     private String location;
-    private LocalDateTime time;
     private int created_by; // User ID
 }
