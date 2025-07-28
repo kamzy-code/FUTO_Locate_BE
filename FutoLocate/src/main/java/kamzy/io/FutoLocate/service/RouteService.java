@@ -73,7 +73,7 @@ public class RouteService {
     }
 
     public String fetchRoutePathviaOSM(double startLat, double startLng, double endLat, double endLng) throws Exception {
-        String urlStr2 = String.format("http://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=full&geometries=geojson\n",
+        String urlStr2 = String.format("https://routing.openstreetmap.de/routed-car/route/v1/driving/%f,%f;%f,%f?overview=full&alternatives=true&geometries=geojson\n",
                 startLng, startLat, endLng, endLat
         );
         System.out.println(urlStr2);
@@ -102,12 +102,12 @@ public class RouteService {
         System.out.println("Step 3");
         if (!routes.isEmpty()) {
 //            JSONObject overviewPolyline = routes.getJSONObject(0).getJSONObject("overview_polyline");
-            JSONObject geometry = routes.getJSONObject(0).getJSONObject("geometry");
-            JSONArray coordinates = geometry.getJSONArray("coordinates");
-            System.out.println("Step 4");
+//            JSONObject geometry = routes.getJSONObject(0).getJSONObject("geometry");
+//            JSONArray coordinates = geometry.getJSONArray("coordinates");
+//            System.out.println("Step 4");
 //            JSONArray coordinates = geometry.getJSONArray("coordinates");
 //            return overviewPolyline.getString("points"); // Encoded polyline
-            return coordinates.toString();
+            return routes.toString();
         }
 
         throw new Exception("No route found.");
